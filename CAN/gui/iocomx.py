@@ -95,29 +95,6 @@ def send_vals(bus, arr2, bridge):
                         check=True, data=arr2)
     sendit(bus, message2)
 
-    #GLib.timeout_add(30, sustain_send)
-
-
-# ------------------------------------------------------------------------
-
-def  sustain_send():
-
-    global globx
-
-    # Send value
-    message2 = can.Message(arbitration_id=globx.msgid, is_extended_id=True,
-                        check=True, data=globx.data )
-    sendit(bus, message2)
-
-    '''if not globx.cnt:
-        print("Sustaining transmission, CTRL-C to exit ... ")
-        sys.stdout.flush()
-    globx.cnt += 1
-
-    if globx.data[0] != 0:
-        GLib.timeout_add(300, sustain_send)
-    '''
-
 # ------------------------------------------------------------------------
 
 def     opencan(serport):
@@ -132,10 +109,11 @@ def     opencan(serport):
         print("Cannot connect to interface:", serport)
         if verbose:
             print(sys.exc_info())
+        return [0, 0]
 
     if not bus:
         print("No bus to connect to:", serport)
-        return
+        return [0, 0]
 
     serno = bus.get_serial_number(0)
     if verbose:
@@ -148,7 +126,7 @@ def     opencan(serport):
 # ------------------------------------------------------------------------
 # This routine builds the bit/bytes mask for the CAN transaction
 # input:
-#        num          array thay contains the bit(s) we want to set
+#        num          array that contains the instruction ON / OFF
 #        bitx         bit in the stack to set / reset
 #        bytex        byte postion or ordinal
 #

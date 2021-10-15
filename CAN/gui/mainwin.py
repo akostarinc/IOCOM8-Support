@@ -190,6 +190,8 @@ class MainWin(Gtk.Window):
         #butt1.connect("clicked", self.show_new, window)
         #hbox4.pack_start(butt1, False, 0, 2)
 
+        self.ser = [0, 0]
+
         stdir = "/dev/"
         sss = os.listdir(stdir)
         ddd = []

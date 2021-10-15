@@ -25,6 +25,7 @@ def phelp():
     print( "   -d level  --debug    Debug level 0-10   0 = None; 10 = Noisy;")
     print( "   -p port   --port     Serial Port to use. Example: /dev/ttyUSB0")
     print( "   -v        --verbose  Verbose.  Print some useful event info.")
+    print( "   -b        --bridge   Verbose.  Print some useful event info.")
     print( "   -V        --version  Print version info.")
     print( "   -q        --quiet    Quiet. Do not print much to the console.")
     print( "   -h        --help.    This message")
