@@ -39,15 +39,19 @@ Data Byte | Data Mask  | Ordinal | Checksum   | Fill | Fill | Fill | Fill
 
 ```
 
-  The Bit arrangement is identical to the control format's bit arrangement.
+  The Bit arrangement is identical to the control format's bit arrangement. Please note, that the
+ RF unit does not broadcast its state to the CAN bus.
 
  CAN example(s) directory structure:
 
 Directory                   |  Description
 --------------------------- |  --------------------------------
 CAN                         | This directory
+gui                         | graphical user interface to control
+gui_mon                     | graphical user interface to monitor
 robotel                     | Example control with the robotel CAN interface
 robotel/python-can          | The python CAN interface from PIP at Thu 08.Jul.2021
+USB_CAN_ORG                 | The original open source drivers
 
 Code examples:
 
