@@ -39,18 +39,6 @@ MSG_RFTOCAN  =   0x19EE5502  #// Intra IOCOMx msg via RF
 MSG_RELAYS   =   0x19EE5503  #// Control local relays  (note: timeout)
 MSG_BRIDGE   =   0x19EE5504  #// Control remote relays (note: timeout)
 
-class _Spacer(Gtk.HBox):
-
-    def __init__(self, sp = None):
-        GObject.GObject.__init__(self)
-        #self.pack_start()
-        #if gui_testmode:
-        #    col = randcolstr(100, 200)
-        #    self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse(col))
-        if sp == None:
-            sp = 6
-        self.set_size_request(sp, sp)
-
 def _colbox(col):
 
     frame = Gtk.Frame()
@@ -152,10 +140,12 @@ class MainWin(Gtk.Window):
 
         hbox3a = Gtk.HBox()
         for aa in range(8):
-            hbox3a.pack_start(Gtk.Label("Ord " + str(aa+1)), 1, 1, 0)
+            lab = Gtk.Label("Ord %d" % (aa+1))
+            lab.set_tooltip_text("Ordinal number %d or Board number %d" % (aa+1, aa+1));
+            hbox3a.pack_start(lab, 1, 1, 0)
 
         vbox.pack_start(hbox3a, 0, 0, 2)
-        vbox.pack_start(_Spacer(), 0, 0, 0)
+        vbox.pack_start(Spacer(), 0, 0, 0)
 
         hbox3 = Gtk.HBox()
         #hbox3 = Gtk.VBox()
@@ -183,15 +173,17 @@ class MainWin(Gtk.Window):
         hbox4.pack_start(self.status, 1, 1, 0)
 
         butt3 = Gtk.Button.new_with_mnemonic("    All ON    ")
+        butt3.set_tooltip_text("Turn all outputs ON")
         butt3.connect("clicked", self.allon, self)
         hbox4.pack_start(butt3, False, 0, 2)
 
         butt4 = Gtk.Button.new_with_mnemonic("    ALL OFF    ")
+        butt4.set_tooltip_text("Turn all outputs OFF")
         butt4.connect("clicked", self.alloff, self)
         hbox4.pack_start(butt4, False, 0, 2)
 
         self.checkbox = Gtk.CheckButton("Wireless Bridge mode")
-        self.checkbox.set_tooltip_text("Transmits to Remote")
+        self.checkbox.set_tooltip_text("If checked, communicate with remote unit")
         hbox4.pack_start(self.checkbox, 0, 0, 0)
 
         #butt1 = Gtk.Button.new_with_mnemonic("    _New    ")
@@ -224,18 +216,11 @@ class MainWin(Gtk.Window):
         self.show_all()
 
     def allon(self, arg, arg2):
-        print("Pressed ALLON")
+        if verbose:
+            print("Pressed ALLON")
 
         for aa in range(8):
-            val = 0xff; mask = 0xff; endval = []
-            endval.append(val)                          # Value
-            endval.append(mask)                         # Mask
-            endval.append(aa+1)                         # Ordinal
-            endval.append((val^0x55) & 0xff)            # Checksum
-
-            for aa in range(4):
-                endval.append(0)
-
+            endval = iocomx.build_all(aa)
             iocomx.send_vals(self.ser[1], endval, self.checkbox.get_active())
 
         col2 = Gdk.Color(0xaaaa, 0xaaaa, 0xaaaa)
@@ -252,7 +237,9 @@ class MainWin(Gtk.Window):
 
 
     def alloff(self, arg, arg2):
-        print("Pressed ALLOFF")
+
+        if verbose:
+            print("Pressed ALLOFF")
 
         for aa in range(8):
             val = 0x00; mask = 0xff; endval = []
@@ -279,10 +266,10 @@ class MainWin(Gtk.Window):
                 self.buttarr2[aa].cbarr[bb].label.set_text("OFF")
 
     def butt_press(self, butt, num):
+
         if verbose:
             print("Pressed %s" % num)
 
-        args = []
         parms = num.split()
         bytex = int(parms[0]) // 8;
         bitx  = int(parms[0]) % 8;
@@ -309,33 +296,17 @@ class MainWin(Gtk.Window):
         self.buttarr2[bytex].cbarr[bitx].label.modify_bg(
                                             Gtk.StateType.NORMAL, col2)
 
-        # Build bit mask
-        endval = []
-        mask =  1 << bitx
-        if "OFF" in num:
-            val = 0
-        elif "ON" in num:
-            val = 1 << bitx
-        else:
-            print("Invalid on off string")
-
-        # This (below) relicates to 'C' language almost exactly
-
-        endval.append(val)                          # Value
-        endval.append(mask)                         # Mask
-        endval.append(bytex+1)                      # Ordinal
-        endval.append((val^0x55) & 0xff)           # Checksum
-
-        for aa in range(4):
-            endval.append(0)
-
-        print("Assembled", endval)
-
         if not self.ser[1]:
             print("Please connect first")
             self.status_set_text("Not connected, please connect first.")
             xmessage("\nPlease connect to a CAN controller first.")
             return
+
+        # Assemble bits to send
+        endval = iocomx.build_bits(num, bitx, bytex)
+
+        if verbose:
+            print("Assembled for CAN", endval)
 
         # Finally, send
         iocomx.send_vals(self.ser[1], endval, self.checkbox.get_active())
@@ -346,7 +317,9 @@ class MainWin(Gtk.Window):
 
         currport = arg.getcursel()
         self.status_set_text("Opening Port - '%s'" % currport)
-        #print("sel:", currport)
+        if verbose:
+            print("sel:", currport)
+
         self.ser = iocomx.opencan(currport)
 
         if self.ser[0] and self.ser[1]:
@@ -382,11 +355,9 @@ class MainWin(Gtk.Window):
 
             hbox.cbarr.append(cb)
 
-            bbox.pack_start(_Spacer(), 0, 0, 0)
+            bbox.pack_start(Spacer(), 0, 0, 0)
             bbox.pack_start(cb, 1, 1, 0)
-            #hbox.insert(cb,  -1)
-            #hbox.insert(_Spacer(1),  -1)
-            bbox.pack_start(_Spacer(), 0, 0, 0)
+            bbox.pack_start(Spacer(), 0, 0, 0)
 
             hbox.insert(bbox, -1)
 

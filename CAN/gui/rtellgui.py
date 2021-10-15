@@ -21,12 +21,13 @@ def phelp():
     print()
     print( "Usage: " + os.path.basename(sys.argv[0]) + " [options]")
     print()
-    print( "Options:    -d level  - Debug level 0-10")
-    print( "            -p        - Port to use (default: 9999)")
-    print( "            -v        - Verbose")
-    print( "            -V        - Version")
-    print( "            -q        - Quiet")
-    print( "            -h        - Help")
+    print( "Options:");
+    print( "   -d level  --debug    Debug level 0-10   0 = None; 10 = Noisy;")
+    print( "   -p port   --port     Serial Port to use. Example: /dev/ttyUSB0")
+    print( "   -v        --verbose  Verbose.  Print some useful event info.")
+    print( "   -V        --version  Print version info.")
+    print( "   -q        --quiet    Quiet. Do not print much to the console.")
+    print( "   -h        --help.    This message")
     print()
     sys.exit(0)
 
@@ -35,18 +36,18 @@ def pversion():
     print( os.path.basename(sys.argv[0]), "Version", version)
     sys.exit(0)
 
-    # option, var_name, initial_val, function
-    # option, var_name, initial_val, function
+    # option_letter, variable_name, initial_value, function
+    # option letter has ":" for arguments; None denotes missing entry
 optarr = \
     ["d:",  "debug=",   "pgdebug",  0,      None],      \
     ["p:",  "port=",    "port",     "",     None],      \
     ["v",   "verbose",  "verbose",  0,      None],      \
     ["q",   "quiet",    "quiet",    0,      None],      \
     ["t",   "test",     "test",     "x",    None],      \
-    ["V",   "version",  None,       None,   pversion],  \
-    ["h",   "help",     None,       None,   phelp]      \
+    ["V",   "version",  "version",  None,   pversion],  \
+    ["h",   "help",     "help",     None,   phelp]      \
 
-conf = ConfigLong(optarr)
+# Just to check if vars arrived
 
 def printmain():
     for aa in dir(mainwin):
@@ -62,6 +63,7 @@ def printmain():
 if __name__ == '__main__':
 
     global mw
+    conf = ConfigLong(optarr)
     args = conf.comline(sys.argv[1:])
     #conf.printvars()
 
@@ -73,6 +75,7 @@ if __name__ == '__main__':
     Gtk.main()
     sys.exit(0)
 
+# EOF
 
 
 

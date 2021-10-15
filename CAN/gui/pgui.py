@@ -1,21 +1,25 @@
 #!/usr/bin/env python
 
-# Menu items for the pyedit project
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+from gi.repository import GObject
 
-'''
-    <menuitem action='Stop'/>
-      <menu action='ColorMenu'>
-        <menuitem action='Red'/>
-        <menuitem action='Green'/>
-        <menuitem action='Blue'/>
-    </menu>
-      <menu action='ShapeMenu'>
-        <menuitem action='Square'/>
-        <menuitem action='Rectangle'/>
-        <menuitem action='Oval'/>
-        <menuitem action='Bold'/>
-      </menu>
-'''
+# Support routines
+
+class Spacer(Gtk.HBox):
+
+    def __init__(self, sp = None):
+        GObject.GObject.__init__(self)
+        #self.pack_start()
+        #if gui_testmode:
+        #    col = randcolstr(100, 200)
+        #    self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse(col))
+        if sp == None:
+            sp = 6
+        self.set_size_request(sp, sp)
+
+# Menu items for the pyedit project
 
 ui_info = \
 '''<ui>
@@ -130,28 +134,4 @@ ui_info = \
     <toolitem action='QuickHelp'/>
     <toolitem action='Help'/>   '''
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# EOF

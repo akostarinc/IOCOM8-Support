@@ -3,6 +3,24 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+'''
+   This module extracts the IOCOM specific bit manipulation from the
+GUI trunk. The bits/bytes are arranged as follows:
+
+    byte[0]     =    payload  (bits set to 0 for OFF, set to 1 for ON)
+    byte[1]     =    mask of transaction (influence only bits that are set)
+    byte[2]     =    ordinal (1-8 for which unit to talk to)
+    byte[3]     =    checksum payload ^ 0x55 -- prevents corrupted packets
+
+    This format is also used in the internal communication of the CAN's
+    board to board transactions. One may listen to the CAN bus to monitor
+    said transactions. (see Message IDs below)
+
+    The primary board (one with the RF) does not interact with the internal
+    CAN messages to the other boards.
+
+'''
+
 import os, sys, getopt, signal, random, time, warnings
 
 from pymenu import  *
@@ -27,8 +45,8 @@ import can, can.interfaces
 # ------------------------------------------------------------------------
 # Basic comm definitions to can  (replicated from can.h Fri 15.Oct.2021)
 
-MSG_SWITCHES =   0x19EE5501  #// Intra IOCOMx msg to funnel to RF
-MSG_RFTOCAN  =   0x19EE5502  #// Intra IOCOMx msg via RF
+MSG_SWITCHES =   0x19EE5501  #// Intra IOCOMx msg to tunnel to RF
+MSG_RFTOCAN  =   0x19EE5502  #// Intra IOCOMx msg to tunnel from RF
 MSG_RELAYS   =   0x19EE5503  #// Control local relays  (note: timeout)
 MSG_BRIDGE   =   0x19EE5504  #// Control remote relays (note: timeout)
 
@@ -127,3 +145,51 @@ def     opencan(serport):
 
     return serno, bus
 
+# ------------------------------------------------------------------------
+# This routine builds the bit/bytes mask for the CAN transaction
+# input:
+#        num          array thay contains the bit(s) we want to set
+#        bitx         bit in the stack to set / reset
+#        bytex        byte postion or ordinal
+#
+# return array of integers for CAN
+
+def     build_bits(num, bitx, bytex):
+
+    mask =  1 << bitx           # Always on for this bit
+    endval = []
+    if "OFF" in num:
+        val = 0
+    elif "ON" in num:
+        val = 1 << bitx
+    else:
+        print("Invalid ON / OFF string")
+
+    # This (below) replicates to 'C' language almost exactly
+
+    endval.append(val)                          # Value
+    endval.append(mask)                         # Mask
+    endval.append(bytex+1)                      # Ordinal
+    endval.append((val^0x55) & 0xff)            # Checksum
+
+    # Second integer blank (may contain random number)
+    for aa in range(4):
+        endval.append(0)
+    return endval
+
+# -----------------------------------------------------------------
+#  Build mask and value for ALL bits
+
+def     build_all(xord):
+
+    val = 0xff; mask = 0xff; endval = []
+    endval.append(val)                          # Value
+    endval.append(mask)                         # Mask
+    endval.append(xord+1)                       # Ordinal
+    endval.append((val^0x55) & 0xff)            # Checksum
+    # Second integer blank (may contain random number)
+    for aa in range(4):
+        endval.append(0)
+    return endval
+
+# EOF
