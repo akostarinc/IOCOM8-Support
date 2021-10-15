@@ -13,9 +13,8 @@
 
 ### IOCOM Specs:
 
+    Item    | Value
+    ------ | -------
     Max Channels  |  64
-
-    ------ | ------- | --- | --- | --- | -- | -- | ---
-
     Rated Open Air Distance | 500 Ft
 
