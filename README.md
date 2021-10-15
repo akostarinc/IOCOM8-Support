@@ -6,6 +6,8 @@
 
   This directory contains the IOCOM8 user / developer documentation.
 
+  The docs directory contains the documentation in odt format.
+  The CAN directory contains sample applications to control the IOCOM from the CAN bus
 
 ### Screen Shot of the control application
 
