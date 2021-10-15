@@ -8,7 +8,8 @@ The IOCOMx can bus speed is set to:
 
 `can_timing_config_t t_config = CAN_TIMING_CONFIG_250KBITS();`
 
-as this is the most ofter used setting in the industrial sector.
+as this is the most ofter used setting in the industrial sector. If custom setting
+is needed, please talk to our tech team.
 
  The items of control:
 ```
@@ -24,15 +25,12 @@ as this is the most ofter used setting in the industrial sector.
 
 The above external items can be sent to the IOCOMx device. The I/O data format:
 
-Data Byte | Ins/Outs | Data Byte | Ins/Outs | Data Byte |  Ins/Outs | Data Byte | Ins / Outs
+Data Byte | Data Mask  | Ordinal | Checksum | Fill | Fill | Fill | Fill
 ------ | ------- | --- | --- | --- | -- | -- | ---
 Byte 0 | 1-8 | Byte 1 | 9-16  | Byte 2 | 17-24 | Byte3 | 25-32
 
-Data Byte | Ins/Outs | Data Byte | Ins/Outs | Data Byte |  Ins/Outs | Data Byte | Ins / Outs
------- | ------- | --- | --- | --- | -- | -- | ---
-Byte 4 | 33-40 | Byte 5 | 41-48  | Byte 6 | 49-56 | Byte 7 | 57-64
-
  The bit arrangement is big-endian, bit_0 is port_1, bit_1 is port_2 ... bit 7 is port_8
+
 
   The internal items of monitor:
 
