@@ -105,4 +105,15 @@ languages or other systems.
 
  Please see GUI examples on how to control the IOCOMx from a graphical user interface;
 
+ Usage: rtellgui.py [options]
+
+Options:
+   -d level  --debug    Debug level 0-10   0 = None; 10 = Noisy;
+   -p port   --port     Serial Port to use. Example: /dev/ttyUSB0
+   -v        --verbose  Verbose.  Print some useful event info.
+   -b        --bridge   Verbose.  Print some useful event info.
+   -V        --version  Print version info.
+   -q        --quiet    Quiet. Do not print much to the console.
+   -h        --help.    This message
+
 // EOF
