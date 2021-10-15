@@ -4,16 +4,6 @@
 
  Below, the messages defined from the device's firmware, and a short description.
 
-```C
-#define MSG_SWITCHES    0x19EE5501  // Intro IOCOMx msg to funnel to RF
-#define MSG_TID         0x19EE5502  // Intra IOCOMx msg / presence check
-#define MSG_RID         0x19EE5503  // Intra IOCOMx msg / future expansion
-#define MSG_AUXILIARY   0x19EE5504  // Control local relays
-#define MSG_BRIDGE      0x19EE5505  // Control remote relays (note: timeout)
-#define MSG_INPUTS      0x19EE5506  // The status of the inputs
-#define MSG_OUTPUTS     0x19EE5507  // The status of the outputs
-```
-
 The IOCOMx can bus speed is set to:
 
 `can_timing_config_t t_config = CAN_TIMING_CONFIG_250KBITS();`
@@ -22,11 +12,17 @@ as this is the most ofter used setting in the industrial sector.
 
  The items of control:
 ```
- MSG_AUXILIARY   0x19EE5504  // Control local relays
- MSG_BRIDGE      0x19EE5505  // Control remote relays (note: timeout)
+ Internal:
+    MSG_SWITCHES =   0x19EE5501  #// Intra IOCOMx msg to tunnel to RF
+    MSG_RFTOCAN  =   0x19EE5502  #// Intra IOCOMx msg to tunnel from RF
+
+ External:
+    MSG_RELAYS   =   0x19EE5503  #// Control local relays  (note: timeout)
+    MSG_BRIDGE   =   0x19EE5504  #// Control remote relays (note: timeout)
+
 ```
 
-The above items can be sent to the IOCOMx device. The I/O data format:
+The above external items can be sent to the IOCOMx device. The I/O data format:
 
 Data Byte | Ins/Outs | Data Byte | Ins/Outs | Data Byte |  Ins/Outs | Data Byte | Ins / Outs
 ------ | ------- | --- | --- | --- | -- | -- | ---
@@ -38,12 +34,12 @@ Byte 4 | 33-40 | Byte 5 | 41-48  | Byte 6 | 49-56 | Byte 7 | 57-64
 
  The bit arrangement is big-endian, bit_0 is port_1, bit_1 is port_2 ... bit 7 is port_8
 
-
-  The items of monitor:
+  The internal items of monitor:
 
 ```
- MSG_INPUTS      0x19EE5506  // The status of the inputs
- MSG_OUTPUTS     0x19EE5507  // The status of the outputs
+    MSG_SWITCHES =   0x19EE5501  #// Intra IOCOMx msg to tunnel to RF
+    MSG_RFTOCAN  =   0x19EE5502  #// Intra IOCOMx msg to tunnel from RF
+
 ```
 
   The Bit arrangement is identical to the control format's bit arrangement.
@@ -105,5 +101,7 @@ Standard ID: 0x506       DLC: 8  Data: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
 most every CAN interface. The python examples are provided for showing the IOCOMx
 interface details, thus the IOCOMx interface can be easily implemented for other
 languages or other systems.
+
+ Please see GUI examples on how to control the IOCOMx from a graphical user interface;
 
 // EOF
