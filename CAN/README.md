@@ -25,12 +25,11 @@ is needed, please talk to our tech team.
 
 The above external items can be sent to the IOCOMx device. The I/O data format:
 
-Data Byte | Data Mask  | Ordinal | Checksum | Fill | Fill | Fill | Fill
------- | ------- | --- | --- | --- | -- | -- | ---
-Byte 0 | 1-8 | Byte 1 | 9-16  | Byte 2 | 17-24 | Byte3 | 25-32
+Data Byte | Data Mask  | Ordinal | Checksum   | Fill | Fill | Fill | Fill
+------    | -------    | ---     | ---        | ---  | --   | --   | ---
+0-0xff    | 0-0xff     | 1-8     |  data^0x55 | Any  | Any  | Any  | Any
 
  The bit arrangement is big-endian, bit_0 is port_1, bit_1 is port_2 ... bit 7 is port_8
-
 
   The internal items of monitor:
 
