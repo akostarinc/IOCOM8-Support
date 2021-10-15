@@ -13,8 +13,8 @@
 
 ### IOCOM Specs:
 
-Item    | Value  | Notes
-------  | -------
+Item    | Value   | Notes
+------  | ------- | -----
 Input Power   | 110 V AC |
 Max Channels  |  64 | 8 to 64 in steps of 8
 Rated Open Air Distance | 500 Ft |
