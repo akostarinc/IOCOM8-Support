@@ -57,55 +57,53 @@ Code examples:
 
   see: robotel.py; see: usb-can.py [usb-can is open source]
 
- The robotel.py interface command line options:
+ The robotel.py interface command line help options:
 
-    -c          --      print supported devices
-    -i          --      interface board (def: robotell)
-    -l          --      listen
-    -g          --      bridge
-    -v          --      verbose
-    -p  port    --      serial port (def: /dev/ttyUSB0)
-    -b  bitrate --      bit rate (def: 250000)
-    -i  message --      message id (def=0x19EE5504)
-    -d  level   --      debug level (0..9)
+      Akostar CAN test utility. (C) Akostar Inc; See README for copying.
+    Use: robotell.py [options] bits masks ord [ ... bits masks ord ]
+       Where options can be:
+         -V          --version    print version
+         -h          --help       print help
+         -c          --devices    print supported devices
+         -t          --timing     show timing
+         -i          --interface  interface board (default: robotell)
+         -l          --listen     listen
+         -g          --bridge     bridge
+         -v          --verbose    verbose
+         -p  port    --port       serial port (def: /dev/ttyUSB0)
+         -b  bitrate --bitrate    bit rate (def: 250000)
+         -i  message --message    message id (def=0x19EE5504 )
+         -d  level   --debug      debug level
+     Arguments for short options also needed for the long options.
+     Use '0x' as hex prefix or '0y' or '0b' as bin prefix.
 
 ### Examples:
 
-   An example invocation from our testing process, that turned on the first 16
+   An example invocation from our testing process, that turned on all relays of unit 8 (ord 8)
+
    LOCAL relays;
 
-    ./robotell.py -p /dev/ttyUSB2  0xff 0xff
+    ./robotell.py -p /dev/ttyUSB2  0xff 0xff 0x8
 
-   An example invocation from our testing process, that turned on the first
-   and second REMOTE relays;
+    An example invocation from our testing process, that turned on the first
+   and second REMOTE relays on unit 7;
 
-    ./robotell.py -p /dev/ttyUSB2 -g 0x3
-
-      Please note, that the remote relays need a continuous feed of 'ON' signal
-    to hold closed. That is provided by the 'bridge' mode. Press Ctrl-C to
-    return to the command line.
+    ./robotell.py -p /dev/ttyUSB2 -g 0x3 0x3 0x7
 
     An example invocation from our testing process, that monitored the traffic;
 
     python ./usb-can.py -p /dev/ttyUSB2 -l INFO -s 250000
 
 
-Screen dump of pressing and releasing button 2:
-```
-Standard ID: 0x506       DLC: 8  Data: 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-2021-07-08 13:47:55,382 [usb-can.py:476] INFO
-Standard ID: 0x506       DLC: 8  Data: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-2021-07-08 13:47:55,431 [usb-can.py:476] INFO
-```
-
   The examples included are implemented in python. Open source libraries are available for
 most every CAN interface. The python examples are provided for showing the IOCOMx
 interface details, thus the IOCOMx interface can be easily implemented for other
 languages or other systems.
 
- Please see GUI examples on how to control the IOCOMx from a graphical user interface;
+ Please see GUI examples on how to control the IOCOMx from a graphical user interface in the
+gui directory;
 
- Usage: rtellgui.py [options]
+Usage: rtellgui.py [options]
 
 Options:
    -d level  --debug    Debug level 0-10   0 = None; 10 = Noisy;
@@ -117,3 +115,4 @@ Options:
    -h        --help.    This message
 
 // EOF
+

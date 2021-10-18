@@ -1,2 +1,0 @@
-#cycle.sh
-./rtellgui.py
