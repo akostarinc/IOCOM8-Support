@@ -13,12 +13,11 @@
 
 ### IOCOM Specs:
 
-Item            | Value   | Notes
-------          | ------- | -----
+Item            | Value    | Notes
+------          | -------  | -----
 Input Power     | 110 V AC |
-Max Channels    |  64 | 8 to 64 in steps of 8
-Rated Open Air Distance | 500 Ft |
-Relay Voltage   | 220 V   |
-Relay Current   | 10 A    | @110 V AC Resistive Load
-To be filled in
+Max Channels    |  64      | 8 to 64 in steps of 8
+Rated Open Air Distance    | 500 Ft |
+Relay Voltage   | 250 V AC |
+Relay Current   | 10 A     | @110 V AC Resistive Load
 
