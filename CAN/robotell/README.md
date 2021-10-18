@@ -46,10 +46,10 @@ substitute ports with COM1 ... COM2 etc.
 
  The can bus ID are listed below:
 
-  define MSG_SWITCHES    0x19EE5501  // Intra IOCOMx msg to funnel to RF
-  define MSG_RFTOCAN     0x19EE5502  // Intra IOCOMx msg via RF
-  define MSG_RELAYS      0x19EE5503  // Control local relays
-  define MSG_BRIDGE      0x19EE5504  // Control remote relays (note: timeout)
+    define MSG_SWITCHES    0x19EE5501  // Intra IOCOMx msg to funnel to RF
+    define MSG_RFTOCAN     0x19EE5502  // Intra IOCOMx msg via RF
+    define MSG_RELAYS      0x19EE5503  // Control local relays
+    define MSG_BRIDGE      0x19EE5504  // Control remote relays (note: timeout)
 
  The items marked 'intra' are used internally between IOCOMx modules. The status on the inputs / outputs
 are mirrored to the CAN BUS (broadcast on delta). The AUX commands control the local
@@ -67,9 +67,9 @@ Here is an example output:
 
  Short field description (of the first line):
 
-  value |  mask |  ordinal | checksum | random | padding
+  Value |  Mask |  Ordinal | Checksum | Random | Padding
   ----- | ----- | -----    | -----    | -----  | -----
-   00   |    01 |     07  |    55     | 7c 0f  | 00 00
+   00   |    01 |     07   |    55    | 7c 0f  | 00 00
 
  When in listen mode, press CTRL-C to terminate.
 
@@ -78,13 +78,12 @@ is integrated into a larger system, and it's inputs and outputs are monitored. F
 as a translator between switch action and CAN message. Or Remote button press to CAN message.
 
   Please note, that the TxRx unit (the one designated to RF transmission / reception) does not expose its
-events as CAN messages. If such messages are paramount, one may deploy an extra unit to expose it's CAN
-messages.
+events as CAN messages. If such messages are required, one may deploy an extra unit to expose it's CAN
+message interface.
 
- Just for completeness the python USB drivers are included here in the python_can
-subdirectory.
+ Just for completeness the python USB drivers are included here in the *python_can* subdirectory.
 
-  Please note that these additions are provided as is, unsupported by Akostar. Naturally, we will
+  Please note that these additions are provided as is, and not officially supported by Akostar. Naturally, we will
 answer your questions and respond to request as a courtesy.
 
 ## Copying
