@@ -24,20 +24,14 @@ import can, can.interfaces
 # ------------------------------------------------------------------------
 # Basic comm definitions to can  (replicated from can.h Fri 16.Jul.2021)
 
-MSG_SWITCHES   = 0x19EE5501  #// Intro IOCOMx msg to funnel to RF
-MSG_TID        = 0x19EE5502  #// Intra IOCOMx msg / presence check
-MSG_MASKS      = 0x19EE5503  #// Intra IOCOMx msg mask
-MSG_RELAYS     = 0x19EE5504  #// Control local relays
-MSG_BRIDGE     = 0x19EE5505  #// Control remote relays (note: timeout)
-MSG_INPUTS     = 0x19EE5506  #// The status of the inputs
-MSG_OUTPUTS    = 0x19EE5507  #// The status of the outputs
-MSG_MASKAUX    = 0x19EE5508  #// IOCOM auxiliary mask
-MSG_AUX        = 0x19EE5509  #// IOCOM auxiliary command
-MSG_RESERVED   = 0x19EE550a  #// IOCOM reserved for future use
+MSG_SWITCHES  =  0x19EE5501  #// Intra IOCOMx msg to funnel to RF
+MSG_RFTOCAN   =  0x19EE5502  #// Intra IOCOMx msg via RF
+MSG_RELAYS    =  0x19EE5503  #// Control local relays
+MSG_BRIDGE    =  0x19EE5504  #// Control remote relays (note: timeout)
 
 class _globals:
-    msgid    =  MSG_AUX
-    msgmask  =  MSG_MASKAUX
+    msgid    =  MSG_RELAYS
+    msgmask  =  MSG_BRIDGE
 
 globx = _globals()
 
@@ -63,6 +57,8 @@ old_rx = can.Message()
 def hexint(nnn):
     if nnn[:2].lower() == "0x":
         return int(nnn[2:], 16)
+    elif nnn[:2].lower() == "0y" or nnn[:2].lower() == "0b":
+        return int(nnn[2:], 2)
     else:
         return int(nnn)
 
@@ -110,8 +106,8 @@ def sendit(bus, messagex):
         print("sending:", hex(messagex.arbitration_id), messagex.data)
         #print("globals", hex(globx.msgid))
         pass
-    bus.send(messagex, timeout=0.2)
-    time.sleep(0.250)
+    bus.send(messagex, timeout=0)
+    #time.sleep(0.250)
 
 # ------------------------------------------------------------------------
 
@@ -128,7 +124,7 @@ def send_vals(bus, strx):
 
     #global CANPACK
 
-    # Passed as one argument, split it
+    # If passed as one argument, split it
     if len(strx) == 1:
         strx = str.split(strx[0])
 
@@ -138,56 +134,39 @@ def send_vals(bus, strx):
     arr2 = []
     for aa in strx:
         arr2.append(hexint(aa))
+    arr2.append((arr2[0]^0x55) & 0xff)            # Checksum
 
-    xlen = len(arr2)
-
-    if verbose:
-        print("Sending: ", arr2)
+    # Second integer blank (may contain random number)
+    for aa in range(4):
+        arr2.append(0)
 
     if bridge:
         globx.msgid = MSG_BRIDGE
-        print("doing bridge, mask", hex(globx.msgmask))
-        print("doing bridge", hex(globx.msgid ))
+        #print("doing bridge, mask", hex(globx.msgmask))
 
-    if xlen != 16:
-        print()
-        print("Please give CAN IOCOMX arguments in packs of eight in the forms of:")
-        print()
-        print("mask1 mask2 mask3 mask4 value1 value2 value3 value4")
-        print("Where 'mask' is the bit mask of the effected switches, and")
-        print("value is the on / off value per bit")
-        print()
-        print("Alternatively, send mask with a --mask option and value")
-        print("with a --value option")
-        return
-
-    if pgdebug > 2:
-        print("Sending", arr2[:8], arr2[8:])
+    if verbose:
+        print("Sending", arr2)
 
     cnt = 0
 
     while True:
-        # Send mask
-        message = can.Message(arbitration_id=globx.msgmask, is_extended_id=True,
-                            check=True, data=arr2[:8] )
-        sendit(bus, message)
-
         # Send value
         message2 = can.Message(arbitration_id=globx.msgid, is_extended_id=True,
-                            check=True, data=arr2[8:] )
+                            check=True, data=arr2)
         sendit(bus, message2)
 
-        if not bridge:
-            break;
+        break
 
-        if bridge and not cnt:
-            print("Sustaining BRIDGE transmission, CTRL-C to exit ... ")
-            sys.stdout.flush()
-        cnt+= 1
-
-        if is_allzero(message2):
-            break
-
+        #if not bridge:
+        #    break;
+        #
+        #if bridge and not cnt:
+        #    print("Sustaining BRIDGE transmission, CTRL-C to exit ... ")
+        #    sys.stdout.flush()
+        #cnt+= 1
+        #
+        #if is_allzero(message2):
+        #    break
 
 def errexit(err_str, exitval = 0):
     print(err_str)
@@ -196,9 +175,11 @@ def errexit(err_str, exitval = 0):
 # ------------------------------------------------------------------------
 # Many other interfaces are supported as well (see below)
 
-def main(args):
+def mainx():
 
-   # Create a bus instance
+    global bus
+
+    # Create a bus instance
     bus = None
     try:
         bus = can.Bus(interface=ifacename,
@@ -220,40 +201,25 @@ def main(args):
 
     bus.set_bitrate(bitrate)
 
-    # See if any mask specified and generate args
-    if maskx:
-        if verbose:
-            print("maskx =", maskx, "valuex =", valuex, "ordx =", ordx)
 
-        # Error check arguments
-        if ordx < 1:
-            errexit("Ordinal must be between 1-8")
-        if ordx > 8:
-            errexit("Ordinal must be less than or equal 8")
-        if maskx > 255 or maskx < 0:
-            errexit("Mask must be less than 256 or greater than zero")
-        if valuex > 255:
-            errexit("Value must be less than 256")
-
-        args = []
-        for aa in range(16):
-            args.append("0")
-
-        adj = ordx - 1
-        args[adj] = str(maskx); args[adj + 8] = str(valuex)
+def sendx(args):
 
     try:
         send_vals(bus, args)
+
     except KeyboardInterrupt as N:
         print("\rProgram Terminated with Ctrl-C")
+        return
+    except ValueError as N:
+        print("Please use valid numeric values.")
+        print("Decimal (0-9) or Hexadecimal (0x prefix) or Binary (0y prefix)")
         return
     except:
         if pgdebug > 3:
             print("Could not send", sys.exc_info())
             raise
-        #print("send_vals", sys.exc_info())
-        print("Invalid value, all arguments must be decimal numbers ... ")
-        print("  ... or hex numbers with the 0x prefix. For example: '0x1a' (which is '26')")
+        print("send_vals", sys.exc_info())
+
         return
 
     if listen:
@@ -272,7 +238,7 @@ def main(args):
 
 def helpx():
     print("Akostar CAN test utility. (C) Akostar Inc; See README for copying.")
-    print("Use: robotell.py [options] data1 .. dataN")
+    print("Use: robotell.py [options] bits masks ord")
     print("   Where options can be:")
     print("     -V          --version    print version")
     print("     -h          --help       print help")
@@ -285,11 +251,9 @@ def helpx():
     print("     -p  port    --port       serial port (def: /dev/ttyUSB0)")
     print("     -b  bitrate --bitrate    bit rate (def: 250000)")
     print("     -i  message --message    message id (def=0x19EE5504 )")
-    print("     -m  mask    --mask       effective bit mask")
-    print("     -u  value   --value      value to send to device")
-    print("     -o  ord     --ord        ordinal to send to")
     print("     -d  level   --debug      debug level")
     print(" Arguments for short options also needed for the long options.")
+    print(" Use '0x' as hex prefix or '0y' or '0b' as bin prefix.")
     sys.exit(1)
 
 longopt = ["help", "message=", "version",  "devices", "timing", "bitrate=",
@@ -344,10 +308,20 @@ if __name__ == '__main__':
         if aa[0] == "-u" or aa[0] == "--value": valuex = hexint(aa[1])
         if aa[0] == "-o" or aa[0] == "--ord": ordx = hexint(aa[1])
 
+    if len(args) < 3:
+        print("Not enough arguments. Use robotell.py -h for quick usage summary.")
+        #helpx()
+        sys.exit(1)
+
     if pgdebug > 1:
         print ("opts", opts, "args", args)
         print("Comm =", serport)
 
-    main(args)
+    mainx();
+
+    for aa in range(len(args)//3):
+        arr3 = [args[3 * aa],args[3 * aa+1],args[3 * aa +2] ] ;
+        #print(arr3)
+        sendx(arr3)
 
 # eof
