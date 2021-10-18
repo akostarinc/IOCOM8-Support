@@ -2,7 +2,7 @@
 
 ## for the Robotell CAN IOCOM interface
 
-  This example drives the Akostar IOCOMx device from the can bus. The general theory of driving he IOCOMx
+  This example drives the Akostar IOCOMx device from the can bus.
 
 Please see descriptions in the parent directories.
 
