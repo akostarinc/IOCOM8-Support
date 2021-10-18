@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 #
-# Supporting documentation at:
+# Please see the ORIGINAL supporting documentation at:
+#     https://python-can.readthedocs.io/en/develop/interfaces/robotell.html
 #
-# https://python-can.readthedocs.io/en/develop/interfaces/robotell.html
+#   If the 'pip install python-can' does not have the robotell code, install it from:
 #
-#  'pip install python-can' does not give the robotell code, install it from:
-#
-#       https://github.com/hardbyte/python-can
+#   https://github.com/hardbyte/python-can
 #
 # History:
-#       Fri 16.Jul.2021
+#       Fri 16.Jul.2021         initial
+#       Mon 18.Oct.2021         added protocol description
 #
+# By the time you read this, the robotell code may be integrated)
 
 from __future__ import absolute_import
 from __future__ import print_function
@@ -18,6 +19,7 @@ from __future__ import print_function
 import array, time, threading, getopt, sys
 import can, can.interfaces
 
+# Just in case one needs to know
 #print(dir(can.interfaces))
 #print (can.interfaces.BACKENDS)
 
@@ -122,7 +124,6 @@ def is_allzero(msgx):
 
 def send_vals(bus, strx):
 
-    #global CANPACK
 
     # If passed as one argument, split it
     if len(strx) == 1:
@@ -136,7 +137,7 @@ def send_vals(bus, strx):
         arr2.append(hexint(aa))
     arr2.append((arr2[0]^0x55) & 0xff)            # Checksum
 
-    # Second integer blank (may contain random number)
+    # Second integer blank (may contain random number on the IOCOMx)
     for aa in range(4):
         arr2.append(0)
 
@@ -149,17 +150,16 @@ def send_vals(bus, strx):
 
     cnt = 0
 
+    # The original was a loop ...
     while True:
         # Send value
         message2 = can.Message(arbitration_id=globx.msgid, is_extended_id=True,
                             check=True, data=arr2)
         sendit(bus, message2)
-
         break
 
         #if not bridge:
         #    break;
-        #
         #if bridge and not cnt:
         #    print("Sustaining BRIDGE transmission, CTRL-C to exit ... ")
         #    sys.stdout.flush()
@@ -212,14 +212,13 @@ def sendx(args):
         return
     except ValueError as N:
         print("Please use valid numeric values.")
-        print("Decimal (0-9) or Hexadecimal (0x prefix) or Binary (0y prefix)")
+        print("Decimal (0-9) or Hexadecimal (0x prefix) or Binary (0y or 0b prefix)")
         return
     except:
         if pgdebug > 3:
             print("Could not send", sys.exc_info())
             raise
-        print("send_vals", sys.exc_info())
-
+        print("send_vals() error:", sys.exc_info())
         return
 
     if listen:
@@ -238,13 +237,13 @@ def sendx(args):
 
 def helpx():
     print("Akostar CAN test utility. (C) Akostar Inc; See README for copying.")
-    print("Use: robotell.py [options] bits masks ord")
+    print("Use: robotell.py [options] bits masks ord [ ... bits masks ord ]")
     print("   Where options can be:")
     print("     -V          --version    print version")
     print("     -h          --help       print help")
     print("     -c          --devices    print supported devices")
     print("     -t          --timing     show timing")
-    print("     -i          --interface  interface board (def: robotell)")
+    print("     -i          --interface  interface board (default: robotell)")
     print("     -l          --listen     listen")
     print("     -g          --bridge     bridge")
     print("     -v          --verbose    verbose")

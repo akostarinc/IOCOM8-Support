@@ -4,9 +4,12 @@
 
   This example drives the Akostar IOCOMx device from the can bus. The general theory of driving he IOCOMx
 from the can bus is to transmit the values of the outputs, and the bit mask of the outputs we
-want to operate / control and the unit number (ordinal number);
+want to operate / control and the unit number (or ordinal number);
 
-  The can bus operates on an eight byte packet width, of which we transmit four bytes of
+  The demo was prepared to use the low cost robotell controller, but other controllers are supported
+by the library. Type ./robotell.py -c to see the list of supported interfaces.
+
+The can bus operates on an eight byte packet width, of which; we transmit four bytes of
   payload, and four bytes of arbitrary data. **
 
   Usage:
@@ -34,6 +37,8 @@ want to operate / control and the unit number (ordinal number);
 
     Type ./robotell.py -h for a more elaborate description of the python utility;
 
+ The system sees the CAN controller as a serial port, so it may connect to any serial port
+without CAN functionality. However, if a CAN controller is detected, it's serial number is printed.
 
   If you are using a language other than python, please do not be discouraged, as
 the python code contains all the elements that are important to drive the
@@ -71,9 +76,9 @@ Here is an example output:
   ----- | ----- | -----    | -----    | -----  | -----
    00   |    01 |     07   |    55    | 7c 0f  | 00 00
 
- When in listen mode, press CTRL-C to terminate.
+ One may terminate listen mode, by pressing the CTRL-C key combination.
 
- The listen mode allows one to study the CAN communication of the IOCOMx. This may be useful if the IOCOMx
+ The listen mode allows the study of the CAN communication of the IOCOMx. This may be useful if the IOCOMx
 is integrated into a larger system, and it's inputs and outputs are monitored. For instance, it can act
 as a translator between switch action and CAN message. Or Remote button press to CAN message.
 
