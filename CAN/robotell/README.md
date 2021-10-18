@@ -46,10 +46,10 @@ substitute ports with COM1 ... COM2 etc.
 
  The can bus ID are listed below:
 
- # define MSG_SWITCHES    0x19EE5501  // Intra IOCOMx msg to funnel to RF
- # define MSG_RFTOCAN     0x19EE5502  // Intra IOCOMx msg via RF
- # define MSG_RELAYS      0x19EE5503  // Control local relays
- # define MSG_BRIDGE      0x19EE5504  // Control remote relays (note: timeout)
+  define MSG_SWITCHES    0x19EE5501  // Intra IOCOMx msg to funnel to RF
+  define MSG_RFTOCAN     0x19EE5502  // Intra IOCOMx msg via RF
+  define MSG_RELAYS      0x19EE5503  // Control local relays
+  define MSG_BRIDGE      0x19EE5504  // Control remote relays (note: timeout)
 
  The items marked 'intra' are used internally between IOCOMx modules. The status on the inputs / outputs
 are mirrored to the CAN BUS (broadcast on delta). The AUX commands control the local
@@ -65,7 +65,7 @@ Here is an example output:
     rx:1 Timestamp: 1634580646.238688    ID: 19ee5501    X Rx DLC:  8    00 01 03 55 e0 46 00 00
     rx:1 Timestamp: 1634580646.238764    ID: 19ee5501    X Rx DLC:  8    00 01 06 55 37 ee 00 00
 
- Short field description:
+ Short field description (of the first line):
 
   value |  mask |  ordinal | checksum | random | padding
   ----- | ----- | -----    | -----    | -----  | -----
@@ -89,7 +89,7 @@ answer your questions and respond to request as a courtesy.
 
 ## Copying
 
-    You are free to use this example as you see fit, provided the original copyright
+You are free to use this example as you see fit, provided the original copyright
 messages are included.
 
 ## The Original message from this example:
