@@ -2,7 +2,10 @@
 
 # pass -g for bridge mode
 
+# Configure your port here
 SER=/dev/ttyUSB2
+OP=0x00
+MASK=0xFF
 
 # This is the slow way; every command goes through CAN open / control / CAN close
 
