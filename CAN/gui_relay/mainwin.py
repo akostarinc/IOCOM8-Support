@@ -89,10 +89,10 @@ def colbox(col):
     return frame
 
 
-def handle_switches(rx_msg):
+def handle_relays(rx_msg):
 
     if pgdebug > 2:
-        print("switches data", rx_msg.data)
+        print("relay data", rx_msg.data)
 
     ord = rx_msg.data[2] -1
 
@@ -125,14 +125,17 @@ def handle_switches(rx_msg):
             buttarr2[aa].cbarr[0].label.set_text("OFF")
 
 
-
 def handle_msg(rx_msg):
 
     if pgdebug > 5:
         print("rx:{0} {1} {2}\n".format("", rx_msg, rx_msg.arbitration_id))
 
-    if rx_msg.arbitration_id ==  MSG_SWITCHES:
-        handle_switches(rx_msg)
+    #if rx_msg.arbitration_id ==  MSG_SWITCHES:
+    #    handle_switches(rx_msg)
+
+    if rx_msg.arbitration_id ==  MSG_RFTOCAN:
+        handle_relays(rx_msg)
+
 
 Gdk.threads_init()
 
@@ -219,7 +222,7 @@ class MainWin(Gtk.Window):
 
         #print("conf", dir(self.conf))
 
-        self.set_title("Akostar IOCOMx / CAN Input Monitor")
+        self.set_title("Akostar IOCOMx / CAN Output Monitor")
         self.set_position(Gtk.WindowPosition.CENTER_ALWAYS)
 
         #ic = Gtk.Image(); ic.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.ICON_SIZE_BUTTON)
@@ -296,7 +299,7 @@ class MainWin(Gtk.Window):
         hbox3a = Gtk.HBox()
         hbox3a.pack_start(Gtk.Label("           "), 0, 0, 2)
         for aa in range(8):
-            lab = Gtk.Label("Input %d " % (aa+1))
+            lab = Gtk.Label("Output %d " % (aa+1))
             lab.set_justify(Gtk.Justification.CENTER)
             #lab.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(.5, .3, .5))
             hbox3a.pack_start(lab, 1, 1, 2)
