@@ -11,6 +11,10 @@
 
 ![Screen Shot](screenshot.png)
 
+<video>
+    <source src="iocomx_1.mkv" type="video/mp4">
+</video>
+
 ### IOCOM Specs:
 
 Item            | Value    | Notes
